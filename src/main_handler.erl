@@ -16,8 +16,7 @@
 %% ===================================================================
 
 init(_Type, Req, _Opts) ->
-	Req2 = cowboy_req:compact(Req),
-	{ok, Req2, #state{}}.
+	{ok, Req, #state{}}.
 
 handle(Req0, State = #state{}) ->
 	Body = jsx:encode(#{
