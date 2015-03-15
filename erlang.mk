@@ -1201,7 +1201,7 @@ $(RELX):
 	@$(call relx_fetch)
 
 relx-rel: $(RELX)
-	@$(RELX) -d -c $(RELX_CONFIG) $(RELX_OPTS)
+	@$(RELX) -c $(RELX_CONFIG) $(RELX_OPTS)
 
 distclean-relx-rel:
 	$(gen_verbose) rm -rf $(RELX_OUTPUT_DIR)

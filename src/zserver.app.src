@@ -8,7 +8,6 @@
 		cowboy,
 		jsx,
 		lager,
-		sync,
 		kernel,
 		stdlib
 	]},
