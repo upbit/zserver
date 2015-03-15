@@ -8,18 +8,10 @@ start(_Type, _Args) ->
 	Dispatch = cowboy_router:compile([
 		{'_', [
 			{"/main", main_handler, []},
-			{"/rest", rest_handler, []},
-			{"/ws", ws_handler, []},
-			{"/wschat", chat_handler, []},
-			{"/eventsource", event_handler, []},
-
 			{"/loop", loop_handler, []},
 
 			%% static handlers
 			{"/", cowboy_static, {priv_file, zserver, "index.html"}},
-			{"/websocket", cowboy_static, {priv_file, zserver, "static/websocket.html"}},
-			{"/chat", cowboy_static, {priv_file, zserver, "static/chatroom.html"}},
-			{"/event", cowboy_static, {priv_file, zserver, "static/eventsource.html"}},
 			{"/static/[...]", cowboy_static, {priv_dir, zserver, "static"}}
 		]}
 	]),
