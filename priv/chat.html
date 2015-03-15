@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>WebSocket - Chat</title>
+<link rel="stylesheet" href="/static/css/normalize.css">
+
+<style>
+#console {
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 7%;
+	margin: 0;
+	padding: 1%;
+	line-height: 1.4em;
+	overflow: auto;
+	white-space: pre-wrap;
+	font-family: 'Lucida Console', Monaco, monospace;
+}
+#cmd {
+	height: 5%;
+	line-height: 5%;
+	font-size: 18px;
+	position: absolute;
+	left: 0; bottom: 1%;
+	padding: .5% 1%;
+	width: 100%;
+	background: #3366bb;
+	color: #CCC;
+	border: none;
+	outline: none;
+	font-family: 'Lucida Console', Monaco, monospace;
+}
+</style>
+</head>
+
+<body>
+<div id="wrap">
+	<pre id="console"></pre>
+	<input id="cmd" value="(づ ￣ ³￣)づ ⓈⓂⓄⓄⓉⒽ" />
+	<script>
+		var elConsole = document.getElementById('console'), elCmd = document.getElementById('cmd');
+		var escapeHtml = function (html) {
+			return html.replace(/&/g, '&amp;').replace(/>/g, '&gt;').replace(/</g, '&lt;');
+		};
+		var output = function (data) {
+			elConsole.innerHTML += escapeHtml(data) + "<BR>";
+			elConsole.scrollTop = 9e5;
+		};
+		var outputEx = function (perfix, data, suffix) {
+			elConsole.innerHTML += perfix + escapeHtml(data) + suffix + "<BR>";
+			elConsole.scrollTop = 9e5;
+		};
+
+		// Init EventSource
+		var source = new EventSource('/chat_eventsource');
+		source.addEventListener('message', function(event) {
+			output(event.data);
+		}, false);
+		source.addEventListener('open', function(event) {
+			outputEx('<span style="color:#0f0;">', 'EventSource Connected.', '</span>')
+		}, false);
+		source.addEventListener('error', function(event) {
+			if (event.eventPhase == EventSource.CLOSED) {
+				outputEx('<span style="color:#f00;">', 'EventSource was Closed.', '</span>')
+			}
+		}, false);
+
+		function getXMLHttpRequest() {
+			var xhr;
+			if(window.ActiveXObject) {
+				xhr= new ActiveXObject("Microsoft.XMLHTTP");
+			}else if (window.XMLHttpRequest) {
+				xhr= new XMLHttpRequest();
+			}else {
+				xhr= null;
+			}
+			return xhr;
+		}
+		function post_data(data) {
+			var xhr = getXMLHttpRequest();
+			xhr.open("post", "/chat_eventsource");
+			xhr.setRequestHeader("Content-Type", "text/plain");  
+			xhr.send(data);
+			xhr.onreadystatechange= function() {
+				if(xhr.readyState == 4 && xhr.status == 200) {
+					elCmd.value = '';
+				}
+			};
+		}
+
+		// Process Enter press
+		elCmd.addEventListener('keypress', function (e) {
+			if (e.keyCode === 13) {
+				post_data(elCmd.value);
+				elCmd.value = '';
+			}
+		});
+	</script>
+</div>
+</body>
+</html>

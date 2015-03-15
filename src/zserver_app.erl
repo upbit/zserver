@@ -12,6 +12,7 @@ start(_Type, _Args) ->
 
 			%% static handlers
 			{"/", cowboy_static, {priv_file, zserver, "index.html"}},
+			{"/chat", cowboy_static, {priv_file, zserver, "chat.html"}},
 			{"/static/[...]", cowboy_static, {priv_dir, zserver, "static"}}
 		]}
 	]),

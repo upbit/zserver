@@ -31,8 +31,8 @@ content_types_accepted(Req, State) ->
 	{[{<<"text/plain">>, handle_post}], Req, State}.		% application/json
 
 %%
-info({message, Message}, Req, State) ->
-	ok = cowboy_req:chunk(["id: ", gen_timestamp_id(), "\n", "data: ", Message, "\n\n"], Req),
+info({message, Sender, Message}, Req, State) ->
+	ok = cowboy_req:chunk(["id: ", gen_timestamp_id(), "\n", "data: ", io_lib:format("~p ", [Sender]), Message, "\n\n"], Req),
 	{loop, Req, State, hibernate}.
 
 terminate(_Reason, _Req, _State) ->
@@ -53,14 +53,15 @@ chunk_start(Req) ->
 		{<<"connection">>, <<"keep-alive">>}
 	],
 	{ok, Req2} = cowboy_req:chunked_reply(200, Headers, Req),
-	ok = cowboy_req:chunk(["id: ", gen_timestamp_id(), "\n", "data: Connected.\n\n"], Req2),
+	Response = ["id: ", gen_timestamp_id(), "\n", "data: ", "> Welcome!", "\n\n"],
+	ok = cowboy_req:chunk(Response, Req2),
 	Req2.
 
 notify_all(Message) ->
 	lists:foreach(
 		fun(Listener) ->
 			lager:debug("notify ~p: ~p", [Listener, Message]),
-			Listener ! {message, Message}
+			Listener ! {message, self(), Message}
 		end, pg2:get_members(notify_group)).
 
 gen_timestamp_id() ->
