@@ -30,6 +30,7 @@
 -spec add(binary()) -> integer().
 add(Msg) ->
 	gen_server:call(?MODULE, {add, Msg}).
+
 %% @doc Get Msgs from room, return Msgs List
 -spec get(non_neg_integer()) -> [ binary() ].
 get(Index) ->

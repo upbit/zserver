@@ -1173,7 +1173,7 @@ RELX ?= $(CURDIR)/relx
 export RELX
 
 RELX_URL ?= https://github.com/erlware/relx/releases/download/v1.1.0/relx
-RELX_OPTS ?=
+RELX_OPTS ?= -d
 RELX_OUTPUT_DIR ?= _rel
 
 ifeq ($(firstword $(RELX_OPTS)),-o)

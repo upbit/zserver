@@ -1,4 +1,4 @@
--module(loop_handler).
+-module(chat_handler).
 -behaviour(cowboy_loop_handler).
 
 %% cowboy handler callbacks
@@ -27,17 +27,12 @@ init(_Type, Req, _Opts) ->
 %% only allowed post for REST
 allowed_methods(Req, State) ->
 	{[<<"POST">>], Req, State}.
-
 content_types_accepted(Req, State) ->
-	{[{<<"application/json">>, handle_post}], Req, State}.
+	{[{<<"text/plain">>, handle_post}], Req, State}.		% application/json
 
 %%
-info({message, Msg}, Req, State) ->
-	Data = jsx:encode(#{
-		<<"messages">> => Msg,
-		<<"timestamp">> => timestamp()
-	}),
-	ok = cowboy_req:chunk(["data: ", Data, "\n\n"], Req),
+info({message, Message}, Req, State) ->
+	ok = cowboy_req:chunk(["id: ", gen_timestamp_id(), "\n", "data: ", Message, "\n\n"], Req),
 	{loop, Req, State, hibernate}.
 
 terminate(_Reason, _Req, _State) ->
@@ -47,11 +42,8 @@ terminate(_Reason, _Req, _State) ->
 
 handle_post(Req, State) ->
 	{ok, Body, Req1} = cowboy_req:body(Req),
-	case jsx:decode(Body) of
-		Data ->
-			notify_all(Data),
-			{true, Req1, State}
-	end.
+	notify_all(Body),
+	{true, Req, State}.
 
 %%
 
@@ -61,20 +53,16 @@ chunk_start(Req) ->
 		{<<"connection">>, <<"keep-alive">>}
 	],
 	{ok, Req2} = cowboy_req:chunked_reply(200, Headers, Req),
-	Data = jsx:encode(#{
-		<<"messages">> => <<"connected">>,
-		<<"timestamp">> => timestamp()
-	}),
-	ok = cowboy_req:chunk(["data: ", Data, "\n\n"], Req2),
+	ok = cowboy_req:chunk(["id: ", gen_timestamp_id(), "\n", "data: Connected.\n\n"], Req2),
 	Req2.
 
-notify_all(Msg) ->
+notify_all(Message) ->
 	lists:foreach(
 		fun(Listener) ->
-			lager:info("notify ~p: ~p", [Listener, Msg]),
-			Listener ! {message, Msg}
+			lager:debug("notify ~p: ~p", [Listener, Message]),
+			Listener ! {message, Message}
 		end, pg2:get_members(notify_group)).
 
-timestamp() ->
-	{M, S, _} = os:timestamp(),  
-	M * 1000000 + S.
+gen_timestamp_id() ->
+	{M, S, U} = erlang:now(),  
+	lists:concat([M * 1000000 + S, ".", U]).
