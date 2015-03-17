@@ -1,102 +1,150 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN" "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>WebSocket - Chat</title>
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+<title>(づ ￣ ³￣)づ Go Way!</title>
 <link rel="stylesheet" href="/static/css/normalize.css">
-
 <style>
-#console {
-	position: absolute;
-	top: 0; left: 0; right: 0; bottom: 7%;
-	margin: 0;
-	padding: 1%;
-	line-height: 1.4em;
-	overflow: auto;
-	white-space: pre-wrap;
-	font-family: 'Lucida Console', Monaco, monospace;
+* {
+-moz-box-sizing: border-box;
+-webkit-box-sizing: border-box;
+box-sizing: border-box;
 }
-#cmd {
-	height: 5%;
-	line-height: 5%;
-	font-size: 18px;
-	position: absolute;
-	left: 0; bottom: 1%;
-	padding: .5% 1%;
-	width: 100%;
-	background: #3366bb;
-	color: #CCC;
-	border: none;
-	outline: none;
-	font-family: 'Lucida Console', Monaco, monospace;
+
+[role=main] {
+max-width: 72rem;
+margin: 0 auto;
+padding: 0.5rem 0.5rem 1rem;
+overflow: hidden;
+color: #333333;
+}
+
+input, textarea {
+width: 100%;
+border: 1px solid gray;
+padding: 0.5rem 0.65rem;
+}
+button, input, select, textarea {
+font-family: inherit;
+font-size: 100%;
+margin: 0;
+}
+input {
+line-height: normal;
+float: right;
+}
+
+.btn {
+background: #333333;
+color: white;
+line-height: 1;
+font-weight: bold;
+border: 0;
+text-align: center;
+-webkit-border-radius: 8px;
+border-radius: 8px;
+width: 88px;
+height: 58px;
+float: right;
+margin-left: 12px;
+}
+.auto_fit {
+overflow: auto;
+display: block;
+}
+
+.room_title {
+color: #3366FF;
+font-size: 150%;
+}
+.nickname {
+color: #888888;
+}
+
+.head {
+margin-bottom: 8px;
+}
+.foot {
+margin-top: 32px;
+}
+
+@media screen and (max-width: 720px) {
+	.btn {
+	margin-top:10px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	width: 66px;
+	height: 44px;
+	}
 }
 </style>
 </head>
 
 <body>
-<div id="wrap">
-	<pre id="console"></pre>
-	<input id="cmd" value="(づ ￣ ³￣)づ ⓈⓂⓄⓄⓉⒽ" />
-	<script>
-		var elConsole = document.getElementById('console'), elCmd = document.getElementById('cmd');
-		var escapeHtml = function (html) {
-			return html.replace(/&/g, '&amp;').replace(/>/g, '&gt;').replace(/</g, '&lt;');
-		};
-		var output = function (data) {
-			elConsole.innerHTML += escapeHtml(data) + "<BR>";
-			elConsole.scrollTop = 9e5;
-		};
-		var outputEx = function (perfix, data, suffix) {
-			elConsole.innerHTML += perfix + escapeHtml(data) + suffix + "<BR>";
-			elConsole.scrollTop = 9e5;
-		};
+<div role="main">
+	<div class="head">
+		<label class="room_title">(づ ￣ ³￣)づ Go Way!</label>
+	</div>
 
-		// Init EventSource
-		var source = new EventSource('/chat_eventsource');
-		source.addEventListener('message', function(event) {
-			output(event.data);
-		}, false);
-		source.addEventListener('open', function(event) {
-			outputEx('<span style="color:#0f0;">', 'EventSource Connected.', '</span>')
-		}, false);
-		source.addEventListener('error', function(event) {
-			if (event.eventPhase == EventSource.CLOSED) {
-				outputEx('<span style="color:#f00;">', 'EventSource was Closed.', '</span>')
-			}
-		}, false);
+	<div id="canvas" class="canvas"></div>
 
-		function getXMLHttpRequest() {
-			var xhr;
-			if(window.ActiveXObject) {
-				xhr= new ActiveXObject("Microsoft.XMLHTTP");
-			}else if (window.XMLHttpRequest) {
-				xhr= new XMLHttpRequest();
-			}else {
-				xhr= null;
-			}
-			return xhr;
-		}
-		function post_data(data) {
-			var xhr = getXMLHttpRequest();
-			xhr.open("post", "/chat_eventsource");
-			xhr.setRequestHeader("Content-Type", "text/plain");  
-			xhr.send(data);
-			xhr.onreadystatechange= function() {
-				if(xhr.readyState == 4 && xhr.status == 200) {
-					elCmd.value = '';
-				}
-			};
-		}
-
-		// Process Enter press
-		elCmd.addEventListener('keypress', function (e) {
-			if (e.keyCode === 13) {
-				post_data(elCmd.value);
-				elCmd.value = '';
-			}
-		});
-	</script>
+	<div class="foot">
+		<form method="post" action="/chat_eventsource" enctype="text/plain">
+			<button class="btn" id="btnSend">Send</button>
+			<span class="auto_fit">
+				<label id="nickname" class="nickname" for="message">{ OFFLINE }</label>
+				<input name="data" id="message" placeholder="Press Enter to Send" required>
+			</span>
+		</form>
+	</div>
 </div>
+
+<script>
+var elCanvas = document.getElementById('canvas'),
+	elNickname = document.getElementById('nickname'),
+	elMessage = document.getElementById('message'),
+	elButton = document.getElementById('btnSend');
+
+var escapeHtml = function (html) {
+	return html.replace(/&/g, '&amp;').replace(/>/g, '&gt;').replace(/</g, '&lt;');
+};
+var output = function (data) {
+	elCanvas.innerHTML += escapeHtml(data) + "<BR>";
+	document.body.scrollTop = 9e5;
+};
+var outputEx = function (perfix, data, suffix) {
+	elCanvas.innerHTML += perfix + escapeHtml(data) + suffix + "<BR>";
+	document.body.scrollTop = 9e5;
+};
+
+// EventSource
+var source = new EventSource('/chat_eventsource');
+
+source.addEventListener('message', function(event) {
+	output(event.data);
+	elMessage.value = '';
+}, false);
+source.addEventListener('open', function(event) {
+	outputEx('<span style="color:#0f0;">', 'EventSource Connected.', '</span>')
+}, false);
+source.addEventListener('error', function(event) {
+	if (event.eventPhase == EventSource.CLOSED) {
+		outputEx('<span style="color:#f00;">', 'EventSource was Closed.', '</span>')
+	}
+}, false);
+source.addEventListener('nickname', function(event) {
+	output("Hello " + event.data);
+	elNickname.innerHTML = event.data;
+}, false);
+
+// Input Enter press
+elMessage.addEventListener('keypress', function (e) {
+	if (e.keyCode === 13) {
+		elButton.click();
+	}
+});
+</script>
+
 </body>
 </html>
