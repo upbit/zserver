@@ -76,7 +76,7 @@ gen_timestamp_id() ->
 	lists:concat([M * 1000000 + S, ".", U]).
 
 gen_nickname() ->
-	get_random_string(2, "ABCDEFGHIJKLMNOPQRSTUVWXYZ") ++ "-0" ++ get_random_string(2, "0126789").
+	get_random_string(2, "ABCDEFGHIJKLMNOPQRSTUVWXYZ") ++ "-0" ++ get_random_string(2, "0123456789").
 
 get_random_string(Length, AllowedChars) ->
 	lists:foldl(fun(_, Acc) ->

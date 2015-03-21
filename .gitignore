@@ -8,3 +8,6 @@ ebin
 _rel/
 .concrete/DEV_MODE
 .rebar
+
+.erlang.mk.packages.v2
+log/
