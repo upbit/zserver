@@ -43,8 +43,13 @@ terminate(_Reason, _Req, _State) ->
 %% POST
 
 handle_post(Req, State) ->
-	{ok, Body, Req1} = cowboy_req:body(Req),
-	notify_all(Body),
+	{ok, Body, Req1} = cowboy_req:body(Req, [{length, 4096}, {read_length, 4096}, {read_timeout, 3000}]),
+	%{ok, BodyQs, Req1} = cowboy_req:body_qs(Req, [{length, 4096}, {read_length, 4096}, {read_timeout, 3000}]),
+	Data = match_body_qs([
+		{type, fun erlang:is_binary/1, <<"message">>},
+		data
+	], Body),
+	lager:error("~p", [Data]),
 	{true, Req1, State}.
 
 %%
@@ -64,6 +69,10 @@ chunk_start(Req, Nickname) ->
 	ok = cowboy_req:chunk(Response, Req2),
 	Req2.
 
+
+nickname(Req, Nickname, UserToken) ->
+	ok = cowboy_req:chunk(["event: nickname\n", "id: ", gen_timestamp_id(), "\n", "data: ", Nickname, "; ", UserToken, "\n\n"], Req).
+
 notify_all(Message) ->
 	lists:foreach(
 		fun(Listener) ->
@@ -82,3 +91,9 @@ get_random_string(Length, AllowedChars) ->
 	lists:foldl(fun(_, Acc) ->
 		[lists:nth(random:uniform(length(AllowedChars)), AllowedChars)] ++ Acc
 	end, [], lists:seq(1, Length)).
+
+
+% export from https://github.com/ninenines/cowboy/blob/master/src/cowboy_req.erl
+-spec match_body_qs(cowboy:fields(), binary()) -> map().
+match_body_qs(Fields, Body) ->
+	cowboy_req:filter(Fields, cowboy_req:kvlist_to_map(Fields, cow_qs:parse_qs(Body))).
