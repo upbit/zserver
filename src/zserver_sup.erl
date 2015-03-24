@@ -13,7 +13,6 @@ start_link() ->
 init([]) ->
 	ok = pg2:create(notify_group),
 	Procs = [
-		?CHILD(chatroom_server, worker),
-		?CHILD(chatroom_manager, worker)
+		?CHILD(chat_users, worker)
 	],
 	{ok, {{one_for_one, 5, 10}, Procs}}.

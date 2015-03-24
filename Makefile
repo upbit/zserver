@@ -2,7 +2,8 @@ PROJECT = zserver
 DEPS = cowboy lager jsx
 include erlang.mk
 
-ERLC_OPTS = +debug_info +'{parse_transform, lager_transform}' \
+ERLC_OPTS = +debug_info \
+			+'{parse_transform, lager_transform}' \
 			+warn_unused_vars +warn_export_all +warn_shadow_vars +warn_unused_import \
 			+warn_bif_clash +warn_unused_record +warn_deprecated_function \
 			+warn_obsolete_guard +strict_validation +report +warn_export_vars +warn_exported_vars \
@@ -30,3 +31,9 @@ run_detached::
 	erl -detached ${RUN_ARGS} -s lager -boot ${BOOT_PATH}
 run_attach::
 	erl -hidden -name zzz@127.0.0.1 -remsh ${PROJECT}@127.0.0.1 -setcookie ${RUN_COOKIE}
+
+clean-all:: clean clean-deps
+clean-deps::
+	@for i in $(DEPS); do \
+		(cd deps/$$i; make clean); \
+	done
