@@ -93,7 +93,7 @@ margin-top: 32px;
 	<div id="canvas" class="canvas"></div>
 
 	<div class="foot">
-		<form method="post" action="/chat_eventsource" enctype="text/plain">
+		<form method="post" action="/chat_eventsource">
 			<button class="btn" id="btnSend">Send</button>
 			<span class="auto_fit">
 				<label id="nickname" class="nickname" for="message">{ OFFLINE }</label>
@@ -139,6 +139,9 @@ source.addEventListener('error', function(event) {
 source.addEventListener('nickname', function(event) {
 	output("Hello " + event.data);
 	elNickname.innerHTML = event.data;
+}, false);
+source.addEventListener('info', function(event) {
+	outputEx('<span style="color:#00f;">', event.data, '</span>')
 }, false);
 
 // Input Enter press
