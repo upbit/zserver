@@ -1,3 +1,4 @@
+# erlang
 .eunit
 deps
 *.o
@@ -8,3 +9,9 @@ ebin
 _rel/
 .concrete/DEV_MODE
 .rebar
+
+# elixir
+/_build
+/deps
+*.ez
+
