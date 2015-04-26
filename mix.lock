@@ -1,0 +1,5 @@
+%{"cowboy": {:git, "https://github.com/ninenines/cowboy.git", "5ff3fdd91e20a137b6378c7271826c1d94d4e3d2", [tag: "2.0.0-pre.1"]},
+  "cowlib": {:git, "git://github.com/ninenines/cowlib.git", "d544a494af4dbc810fc9c15eaf5cc050cced1501", [ref: "1.0.0"]},
+  "exjsx": {:git, "https://github.com/talentdeficit/exjsx.git", "087e01df2457262dcc578d36b68fcdca41860f23", [tag: "v3.1.0"]},
+  "jsx": {:hex, :jsx, "2.4.0"},
+  "ranch": {:git, "git://github.com/ninenines/ranch.git", "adf1822defc2b7cfdc7aca112adabfa1d614043c", [ref: "1.0.0"]}}

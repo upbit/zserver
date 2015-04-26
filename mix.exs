@@ -14,8 +14,12 @@ defmodule Zserver.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger]]
+    [
+      mod: {Zserver, []},
+      applications: [:logger, :cowboy]
+    ]
   end
+
 
   # Dependencies can be Hex packages:
   #
@@ -27,6 +31,9 @@ defmodule Zserver.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    []
+    [
+      { :cowboy, git: "https://github.com/ninenines/cowboy.git", tag: "2.0.0-pre.1" },
+      { :exjsx, git: "https://github.com/talentdeficit/exjsx.git", tag: "v3.1.0" }
+    ]
   end
 end
