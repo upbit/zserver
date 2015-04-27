@@ -9,6 +9,7 @@ ebin
 _rel/
 .concrete/DEV_MODE
 .rebar
+log/
 
 # elixir
 /_build
