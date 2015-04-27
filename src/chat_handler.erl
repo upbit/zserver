@@ -1,44 +1,35 @@
 -module(chat_handler).
--behaviour(cowboy_loop_handler).
 
-%% cowboy handler callbacks
--export([
-		init/3,
-		allowed_methods/2,
-		content_types_accepted/2,
-		info/3,
-		terminate/3
-	]).
-
+-export([init/2, allowed_methods/2, content_types_accepted/2, info/3]).
 -export([handle_post/2]).
 
--record(state, {}).
-
-init(_Type, Req, _Opts) ->
+init(Req, Opts) ->
 	case cowboy_req:method(Req) of
-		{<<"POST">>, _} ->
-			{upgrade, protocol, cowboy_rest};
-		{<<"GET">>, Req1} ->
+		<<"POST">> ->
+			{cowboy_rest, Req, Opts};
+		<<"GET">> ->
 			random:seed(erlang:now()),
-			Nickname = gen_nickname(),
-			Req2 = chunk_start(Req1, Nickname),
-			ok = pg2:join(notify_group, self()),
-			{loop, Req2, #state{}, hibernate}
+
+			%% start chunk reply
+			Req1 = chunk_start(Req),
+			ok = send_event(Req1, info, <<"(´・ω・`) I am ready."/utf8>>),
+
+			%% join pg2 notify group
+			ok = pg2:create(chat_notify_group),
+			ok = pg2:join(chat_notify_group, self()),
+			{cowboy_loop, Req1, Opts, hibernate}
 	end.
 
 %% only allowed post for REST
 allowed_methods(Req, State) ->
 	{[<<"POST">>], Req, State}.
 content_types_accepted(Req, State) ->
-	{[{<<"text/plain">>, handle_post}], Req, State}.		% application/json
+	{[{<<"application/x-www-form-urlencoded">>, handle_post}], Req, State}.
 
 %%
 info({message, Message}, Req, State) ->
-	ok = cowboy_req:chunk(["id: ", gen_timestamp_id(), "\n", "data: [", "Hidden", "] ", Message, "\n\n"], Req),
-	{loop, Req, State, hibernate}.
-
-terminate(_Reason, _Req, _State) ->
-	ok.
+	ok = send_message(Req, Message),
+	{ok, Req, State, hibernate}.
 
 %% POST
 
@@ -52,22 +43,34 @@ handle_post(Req, State) ->
 	lager:error("~p", [Data]),
 	{true, Req1, State}.
 
-%%
 
-chunk_start(Req, Nickname) ->
+%% Internal functions - chunk
+
+%% @doc Send event-stream header to client
+chunk_start(Req) ->
 	Headers = [
 		{<<"content-type">>, <<"text/event-stream">>},
 		{<<"connection">>, <<"keep-alive">>}
 	],
-	{ok, Req2} = cowboy_req:chunked_reply(200, Headers, Req),
-	Response = [
-		"event: nickname\n",
-		"id: ", gen_timestamp_id(), "\n",
-		"data: ", Nickname, "\n",
-		"\n"
-	],
-	ok = cowboy_req:chunk(Response, Req2),
-	Req2.
+	cowboy_req:chunked_reply(200, Headers, Req).
+
+send_message(Req, Data) ->
+	send_event(Req, message, Data).
+
+-spec send_event(term(), atom() | list(), binary()) -> ok.
+send_event(Req, Event, Data) when is_atom(Event) ->
+	send_event(Req, atom_to_list(Event), Data);
+send_event(Req, Event, Data) when is_list(Event), is_binary(Data) ->
+	EventBinary = binary:list_to_bin(["event: ", Event, "\n"]),
+	IdBinary = binary:list_to_bin(["id: ", gen_timestamp_id(), "\n"]),
+	Response = <<
+		EventBinary/binary, IdBinary/binary,
+		<<"data: ">>/binary, Data/binary, <<"\n\n">>/binary
+	>>,
+	cowboy_req:chunk(Response, Req).
+
+
+%% Internal functions - utils
 
 
 nickname(Req, Nickname, UserToken) ->
