@@ -2,7 +2,7 @@ defmodule ZServer.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :zserver,
+    [app: :ZServer,
      version: "0.0.1",
      elixir: "~> 1.0",
      build_embedded: Mix.env == :prod,
@@ -33,7 +33,6 @@ defmodule ZServer.Mixfile do
     [
       { :cowboy, "~> 1.0.0" },
       { :plug, "~> 0.13" },
-      #{ :lager, "~> 2.1.1" },
       { :exjsx, git: "https://github.com/talentdeficit/exjsx.git", tag: "v3.1.0" }
     ]
   end

@@ -4,8 +4,18 @@ defmodule UsersRouter do
   plug :match
   plug :dispatch
 
-  get "/users/new" do
-    send_resp(conn, 200, "new user")
+  post "/new" do
+    {:ok, response} = JSX.encode(%{
+      "user" => :toor,
+      "pass" => :deadbeef
+    })
+    
+    conn
+    |> put_resp_header("content-type", "application/json")
+    |> send_resp(200, response)
   end
 
+  match _ do
+    RespHelper.http_404(conn)
+  end
 end

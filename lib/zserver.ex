@@ -1,7 +1,6 @@
 defmodule ZServer do
   use Application
   use Plug.Router
-
   use Plug.ErrorHandler
 
   plug :match
@@ -9,23 +8,21 @@ defmodule ZServer do
 
   @spec start(atom, Keyword.t) :: {:ok, pid}
   def start(_types, _args) do
-    #:application.start :lager
     Plug.Adapters.Cowboy.http ZServer, [], port: 8080
   end
 
   # Routing Table
-  get "/foo" do
-    send_resp(conn, 200, "bar")
+  get "/" do
+    send_resp(conn, 200, "It Works!")
   end
 
   forward "/users", to: UsersRouter
 
-  defp handle_errors(conn, %{kind: kind, reason: reason, stack: stack}) do
-    {:ok, body} = JSX.encode(%{
-      "kind" => kind,
-      "reason" => reason,
-      "stack" => stack
-    })
-    send_resp(conn, conn.status, body)
+  match _ do
+    RespHelper.http_404(conn)
+  end
+
+  defp handle_errors(conn, %{kind: _kind, reason: _reason, stack: _stack}) do
+    send_resp(conn, conn.status, "Oops!")
   end
 end

@@ -1,8 +1,6 @@
 %{"cowboy": {:hex, :cowboy, "1.0.0"},
   "cowlib": {:hex, :cowlib, "1.0.1"},
   "exjsx": {:git, "https://github.com/talentdeficit/exjsx.git", "087e01df2457262dcc578d36b68fcdca41860f23", [tag: "v3.1.0"]},
-  "goldrush": {:hex, :goldrush, "0.1.6"},
   "jsx": {:hex, :jsx, "2.4.0"},
-  "lager": {:hex, :lager, "2.1.1"},
   "plug": {:hex, :plug, "0.13.0"},
   "ranch": {:hex, :ranch, "1.0.0"}}
