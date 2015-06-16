@@ -12,11 +12,11 @@ defmodule ZServer do
   end
 
   # Routing Table
+  forward "/users", to: UsersRouter
+
   get "/" do
     send_resp(conn, 200, "It Works!")
   end
-
-  forward "/users", to: UsersRouter
 
   match _ do
     RespHelper.http_404(conn)

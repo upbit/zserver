@@ -5,14 +5,14 @@ defmodule UsersRouter do
   plug :dispatch
 
   post "/new" do
-    {:ok, response} = JSX.encode(%{
+    response = %{
       "user" => :toor,
       "pass" => :deadbeef
-    })
+    }
     
     conn
     |> put_resp_header("content-type", "application/json")
-    |> send_resp(200, response)
+    |> send_resp(200, :jsx.encode(response))
   end
 
   match _ do
