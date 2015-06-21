@@ -1,13 +1,17 @@
 defmodule UsersRouter do
+  import Plug.Conn
   use Plug.Router
 
   plug :match
   plug :dispatch
 
-  post "/new" do
+  get "/new" do
+    conn = fetch_params(conn) # populates conn.params
+    %{ "uid" => uid, "pass" => pass } = conn.params
+
     response = %{
-      "user" => :toor,
-      "pass" => :deadbeef
+      "uid" => "#{uid}",
+      "pass" => "#{pass}",
     }
     
     conn

@@ -22,7 +22,7 @@ defmodule ZServer do
     RespHelper.http_404(conn)
   end
 
-  defp handle_errors(conn, %{kind: _kind, reason: _reason, stack: _stack}) do
-    send_resp(conn, conn.status, "Oops!")
+  defp handle_errors(conn, %{kind: _kind, reason: _reason, stack: _stack} = error_map) do
+    send_resp(conn, conn.status, :io_lib.format("Oops!~n~n~p", [error_map]))
   end
 end
