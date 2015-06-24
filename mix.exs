@@ -5,8 +5,6 @@ defmodule ZServer.Mixfile do
     [app: :ZServer,
      version: "0.0.1",
      elixir: "~> 1.0",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
      deps: deps]
   end
 
@@ -16,7 +14,7 @@ defmodule ZServer.Mixfile do
   def application do
     [
       mod: {ZServer, []},
-      applications: [:cowboy, :plug]
+      applications: [:maru]
     ]
   end
 
@@ -32,7 +30,7 @@ defmodule ZServer.Mixfile do
   defp deps do
     [
       { :cowboy, "~> 1.0.0" },
-      { :plug, "~> 0.13" },
+      { :maru, "~> 0.3.0" },
       { :jsx, "~> 2.6.2" }
     ]
   end

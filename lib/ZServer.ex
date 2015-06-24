@@ -1,28 +1,24 @@
 defmodule ZServer do
-  use Application
-  use Plug.Router
-  use Plug.ErrorHandler
-
-  plug :match
-  plug :dispatch
-
-  @spec start(atom, Keyword.t) :: {:ok, pid}
-  def start(_types, _args) do
-    Plug.Adapters.Cowboy.http ZServer, [], port: 8080
+  def start(_type, _args) do
+    ZServerSupervisor.start_link
   end
+end
 
-  # Routing Table
-  forward "/users", to: UsersRouter
+defmodule ZServer.Router.Homepage do
+  import Plug.Conn
+  use Maru.Router
 
-  get "/" do
-    send_resp(conn, 200, "It Works!")
+  get do
+    resp = %{ hello: :world }
   end
+end
 
-  match _ do
-    RespHelper.http_404(conn)
-  end
+defmodule ZServer.API do
+  use Maru.Router
 
-  defp handle_errors(conn, %{kind: _kind, reason: _reason, stack: _stack} = error_map) do
-    send_resp(conn, conn.status, :io_lib.format("Oops!~n~n~p", [error_map]))
+  mount ZServer.Router.Homepage
+
+  def error(conn, err) do
+    "ERROR: #{inspect err}" |> text(500)
   end
 end
