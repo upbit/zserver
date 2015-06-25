@@ -5,20 +5,25 @@ defmodule ZServer do
 end
 
 defmodule ZServer.Router.Homepage do
-  import Plug.Conn
   use Maru.Router
 
-  get do
-    resp = %{ hello: :world }
+  resources do
+    get do
+      %{ user: :abc } |> json
+    end
+
+    #mount Router.User
   end
 end
 
 defmodule ZServer.API do
   use Maru.Router
 
+  plug Plug.Static, at: "/static", from: "./priv/"
+
   mount ZServer.Router.Homepage
 
-  def error(conn, err) do
-    "ERROR: #{inspect err}" |> text(500)
+  def error(conn, _e) do
+    %{ error: _e } |> json
   end
 end
