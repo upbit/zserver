@@ -9,7 +9,9 @@ defmodule ZServer.Router.Homepage do
 
   resources do
     get do
-      %{ user: :abc } |> json
+      #"Hello World!" |> text
+      #%{ foo: :bar } |> json
+      "<h1>It Works!</h1>" |> html
     end
 
     #mount Router.User
