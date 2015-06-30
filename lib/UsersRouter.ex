@@ -1,25 +1,21 @@
 defmodule UsersRouter do
-  import Plug.Conn
-  use Plug.Router
+  use Maru.Router
 
-  plug :match
-  plug :dispatch
+  # defmodule UserEntity do
+  #   def serialize(payload, _opts) do
+  #     %{name: payload[:id], age: payload[:age]}
+  #   end
+  # end
 
-  get "/new" do
-    conn = fetch_params(conn) # populates conn.params
-    %{ "uid" => uid, "pass" => pass } = conn.params
-
-    response = %{
-      "uid" => "#{uid}",
-      "pass" => "#{pass}",
-    }
-    
-    conn
-    |> put_resp_header("content-type", "application/json")
-    |> send_resp(200, :jsx.encode(response))
-  end
-
-  match _ do
-    RespHelper.http_404(conn)
+  namespace :user do
+    route_param :id do
+      params do
+        requires :age, type: Integer, values: 18..65
+      end
+      get do
+        #present %{ user: params[:id], age: params[:age] }, with: UserEntity
+        %{ user: params[:id], age: params[:age] } |> json
+      end
+    end
   end
 end

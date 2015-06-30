@@ -14,7 +14,7 @@ defmodule ZServer.Router.Homepage do
       "<h1>It Works!</h1>" |> html
     end
 
-    #mount Router.User
+    mount UsersRouter
   end
 end
 
@@ -25,7 +25,11 @@ defmodule ZServer.API do
 
   mount ZServer.Router.Homepage
 
-  def error(conn, _e) do
-    %{ error: _e } |> json
-  end
+  # def error(conn, _e) do
+  #   %{ error: _e } |> json
+  # end
+    rescue_from :all do
+      status 500
+      "match error"
+    end
 end
