@@ -30,8 +30,7 @@ defmodule ZServer.Mixfile do
   defp deps do
     [
       { :cowboy, "~> 1.0.0" },
-      { :maru, "~> 0.3.0" },
-      { :jsx, "~> 2.6.2" }
+      { :maru, git: "https://github.com/falood/maru.git", branch: "master" }
     ]
   end
 end

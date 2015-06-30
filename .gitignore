@@ -10,6 +10,7 @@ _rel/
 .concrete/DEV_MODE
 .rebar
 log/
+mix.lock
 
 # elixir
 /_build

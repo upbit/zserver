@@ -9,12 +9,11 @@ defmodule ZServer.Router.Homepage do
 
   resources do
     get do
-      #"Hello World!" |> text
-      #%{ foo: :bar } |> json
-      "<h1>It Works!</h1>" |> html
+      content_type "text/html"
+      "<h1>It Works!</h1>"
     end
 
-    mount UsersRouter
+    mount UserRouter
   end
 end
 
@@ -22,14 +21,10 @@ defmodule ZServer.API do
   use Maru.Router
 
   plug Plug.Static, at: "/static", from: "./priv/"
-
   mount ZServer.Router.Homepage
 
-  # def error(conn, _e) do
-  #   %{ error: _e } |> json
-  # end
-    rescue_from :all do
-      status 500
-      "match error"
-    end
+  rescue_from :all, as: e do
+    status 500
+    %{ error: e }
+  end
 end
