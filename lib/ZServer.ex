@@ -23,6 +23,7 @@ defmodule ZServer.API do
   plug XSS.Protection
 
   # routers
+  plug MaruSwagger, at: "/swagger"
   plug Plug.Static, at: "/static", from: "./priv/"
 
   mount ZServer.Router.Homepage
