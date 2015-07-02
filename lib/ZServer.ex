@@ -20,7 +20,11 @@ end
 defmodule ZServer.API do
   use Maru.Router
 
+  plug XSS.Protection
+
+  # routers
   plug Plug.Static, at: "/static", from: "./priv/"
+
   mount ZServer.Router.Homepage
 
   rescue_from :all, as: e do
