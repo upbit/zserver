@@ -1,10 +1,10 @@
 defmodule ZServer do
   def start(_type, _args) do
-    {:ok, client} = :cqerl.new_client({'127.0.0.1', 9042})
-    {:ok, result} = :cqerl.run_query(client, "SELECT cql_version FROM system.local LIMIT 1;")
-    [row] = :cqerl.all_rows(result)
-    IO.puts :proplists.get_value(:cql_version, row)
-    :cqerl.close_client(client)
+    # {:ok, client} = :cqerl.new_client({'127.0.0.1', 9042})
+    # {:ok, result} = :cqerl.run_query(client, "SELECT cql_version FROM system.local LIMIT 1;")
+    # [row] = :cqerl.all_rows(result)
+    # IO.puts :proplists.get_value(:cql_version, row)
+    # :cqerl.close_client(client)
     ZServerSupervisor.start_link
   end
 end
