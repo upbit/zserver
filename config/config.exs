@@ -23,6 +23,10 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
-# Maru
+# maru
 config :maru, ZServer.API,
   http: [port: 8080]
+
+# cqerl
+config :cqerl,
+	cassandra_nodes: [ { '127.0.0.1', 9042 } ]

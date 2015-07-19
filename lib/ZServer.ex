@@ -1,10 +1,6 @@
 defmodule ZServer do
   def start(_type, _args) do
-    # {:ok, client} = :cqerl.new_client({'127.0.0.1', 9042})
-    # {:ok, result} = :cqerl.run_query(client, "SELECT cql_version FROM system.local LIMIT 1;")
-    # [row] = :cqerl.all_rows(result)
-    # IO.puts :proplists.get_value(:cql_version, row)
-    # :cqerl.close_client(client)
+    :seafood.start_cache(:my_cache, %{:expiration => 3600})
     ZServerSupervisor.start_link
   end
 end
@@ -17,9 +13,22 @@ defmodule ZServer.Router.Homepage do
       content_type "text/html"
       "<h1>It Works!</h1>"
     end
-
-    mount UserRouter
   end
+
+  resources "/version" do
+    get do
+      {:ok, client} = :cqerl.new_client({})
+      {:ok, result} = :cqerl.run_query(client, "SELECT cql_version FROM system.local LIMIT 1;")
+      [row] = :cqerl.all_rows(result)
+      version = :proplists.get_value(:cql_version, row)
+      :cqerl.close_client(client)
+      {:ok, count} = :seafood.get(:my_cache, <<"count">>, 1)
+      :seafood.put(:my_cache, <<"count">>, count+1)
+      %{ cql_version: version, count: count }
+    end
+  end
+
+  mount UserRouter
 end
 
 defmodule ZServer.API do
