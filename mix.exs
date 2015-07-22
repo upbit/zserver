@@ -32,7 +32,7 @@ defmodule ZServer.Mixfile do
       { :cowboy, "~> 1.0.0" },
       { :maru, git: "https://github.com/falood/maru.git", branch: "master" },
       { :maru_swagger, git: "https://github.com/upbit/maru_swagger.git", branch: "master" },
-      { :seafood, git: "git@10.251.62.25:haozhou/seafood.git", branch: "master" },
+      # { :seafood, git: "git@10.251.62.25:haozhou/seafood.git", branch: "master" },
       { :exsync, "~> 0.1.0" },
       { :cqerl, git: "https://github.com/matehat/cqerl.git", tag: "v0.8.0" },
     ]

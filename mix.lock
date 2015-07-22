@@ -12,7 +12,6 @@
   "pooler": {:git, "https://github.com/seth/pooler.git", "2888321cd799234183dfcba82f335207d68e354d", []},
   "quickrand": {:git, "https://github.com/okeuday/quickrand.git", "49aa03828233b2fec398ea4244a568aeac827dd8", [tag: "v1.5.0"]},
   "ranch": {:hex, :ranch, "1.1.0"},
-  "seafood": {:git, "git@10.251.62.25:haozhou/seafood.git", "1f741d821962e91d3337cbd496d354e992d2be50", [branch: "master"]},
   "semver": {:git, "https://github.com/nebularis/semver.git", "c7d509f38298ec6594be4efdcd8a8f2322760039", []},
   "snappy": {:git, "https://github.com/fdmanana/snappy-erlang-nif.git", "ec2061113147af20916e9765ae9d63a18114825a", []},
   "uuid": {:git, "https://github.com/okeuday/uuid.git", "6bc38507460c821321d66504d3f8d6c1cdb57d98", []}}
