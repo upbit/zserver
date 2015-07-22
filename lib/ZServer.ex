@@ -5,32 +5,6 @@ defmodule ZServer do
   end
 end
 
-defmodule ZServer.Router.Homepage do
-  use Maru.Router
-
-  resources do
-    get do
-      content_type "text/html"
-      "<h1>It Works!</h1>"
-    end
-  end
-
-  resources "/version" do
-    get do
-      {:ok, client} = :cqerl.new_client({})
-      {:ok, result} = :cqerl.run_query(client, "SELECT cql_version FROM system.local LIMIT 1;")
-      [row] = :cqerl.all_rows(result)
-      version = :proplists.get_value(:cql_version, row)
-      :cqerl.close_client(client)
-      {:ok, count} = :seafood.get(:my_cache, <<"count">>, 1)
-      :seafood.put(:my_cache, <<"count">>, count+1)
-      %{ cql_version: version, count: count }
-    end
-  end
-
-  mount UserRouter
-end
-
 defmodule ZServer.API do
   use Maru.Router
 
@@ -38,12 +12,18 @@ defmodule ZServer.API do
 
   # routers
   plug MaruSwagger, at: "/swagger"
-  plug Plug.Static, at: "/static", from: "./priv/"
+  plug Plug.Static, at: "/static", from: "./priv/static/"
 
-  mount ZServer.Router.Homepage
+  mount ZServer.Routers.Homepage
+
+  rescue_from Maru.Exceptions.NotFound do
+    status 404
+    content_type "text/html"
+    "<html><center><img src='/static/404.jpg'></center></html>"
+  end
 
   rescue_from :all, as: e do
     status 500
-    %{ error: e }
+    :io_lib.format("~p~n~nStacktrace:~n~s", [e, Exception.format_stacktrace(System.stacktrace())]) |> List.flatten |> to_string
   end
 end
