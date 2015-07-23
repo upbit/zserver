@@ -14,7 +14,7 @@ defmodule ZServer.Mixfile do
   def application do
     [
       mod: {ZServer, []},
-      applications: [:maru, :exsync, :cqerl]
+      applications: [:maru, :exsync, :cqerl, :ibrowse]
     ]
   end
 
@@ -32,9 +32,11 @@ defmodule ZServer.Mixfile do
       { :cowboy, "~> 1.0.0" },
       { :maru, git: "https://github.com/falood/maru.git", branch: "master" },
       { :maru_swagger, git: "https://github.com/upbit/maru_swagger.git", branch: "master" },
-      # { :seafood, git: "git@10.251.62.25:haozhou/seafood.git", branch: "master" },
       { :exsync, "~> 0.1.0" },
       { :cqerl, git: "https://github.com/matehat/cqerl.git", tag: "v0.8.0" },
+      { :tesla, "~> 0.1.5" },
+      { :ibrowse, git: "https://github.com/cmullaparthi/ibrowse.git", tag: "v4.1.1"},
+      { :exjsx, "~> 3.1.0" },
     ]
   end
 end
