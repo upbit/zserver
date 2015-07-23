@@ -1,6 +1,5 @@
 defmodule ZServer do
   def start(_type, _args) do
-    :seafood.start_cache(:my_cache, %{:expiration => 3600})
     ZServerSupervisor.start_link
   end
 end
