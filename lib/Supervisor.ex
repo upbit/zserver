@@ -1,4 +1,4 @@
-defmodule ZServerSupervisor do
+defmodule ZServer.Supervisor do
   @behaviour :supervisor
 
   def start_link do

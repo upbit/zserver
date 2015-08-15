@@ -1,15 +1,20 @@
-zserver
+ZServer
 --------------------
 
-A demo server written in Elixir.
+A simple web server written in Elixir.
 
-# To-Do
+## How-To
 
-* [X] A web server framework written in Elixir
-* [X] Support [maru](https://github.com/falood/maru)/[maru_swagger](https://github.com/falood/maru_swagger)
-* [X] Handling 404/500 error in routers
-* [X] Add [exsync](https://github.com/falood/exsync) in server for code reload
-* [ ] Import HTTP client and fetch Pixiv Ranking data to local
-* [ ] Storage Ranking data to Cassandra through [cqerl](https://github.com/matehat/cqerl)
+1. `git clone https://github.com/upbit/zserver.git`
+1. `mix deps.get && mix deps.compile`
+1. Dev: `iex -S mix`
+1. Release: `MIX_ENV=prod mix release`
+
+## To-Do
+
+* [x] A web server framework written in Elixir
+* [x] ~~Support [maru](https://github.com/falood/maru)/[maru_swagger](https://github.com/falood/maru_swagger)~~
+* [x] Handling 40x/500 error in routers
+* [x] Add [exsync](https://github.com/falood/exsync) in server for code reload
+* [ ] Release project NekoNail, a illusts/ranking spider of pixiv.net
 * [ ] Support similarity illust search use ElasticSearch
-* [ ] Import seafood, a LRU cache base on ETS
