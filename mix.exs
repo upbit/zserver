@@ -2,10 +2,13 @@ defmodule ZServer.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :ZServer,
-     version: "0.0.1",
-     elixir: "~> 1.0",
-     deps: deps]
+    [
+      app: :zserver,
+      version: "0.1.0",
+      elixir: "~> 1.0",
+      elixirc_paths: elixirc_paths(Mix.env),
+      deps: deps
+    ]
   end
 
   # Configuration for the OTP application
@@ -14,9 +17,17 @@ defmodule ZServer.Mixfile do
   def application do
     [
       mod: {ZServer, []},
-      applications: [:maru]
+      applications: applications(Mix.env)
     ]
   end
+
+  defp applications(:dev), do: applications(:all) ++ [:exsync]
+  defp applications(_all) do
+    [:logger, :maru]
+    ++ [:cqerl, :uuid, :semver, :pooler, :lz4, :snappy]
+  end
+
+  defp elixirc_paths(_all), do: ["lib", "src"]
 
   # Dependencies can be Hex packages:
   #
@@ -29,9 +40,12 @@ defmodule ZServer.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      { :cowboy, "~> 1.0.0" },
-      { :maru, git: "https://github.com/falood/maru.git", branch: "master" },
-      { :maru_swagger, git: "https://github.com/upbit/maru_swagger.git", branch: "master" }
+      {:cowboy, "~> 1.0.0"},
+      {:maru, git: "https://github.com/falood/maru.git", branch: "master"},
+      {:cqerl, git: "https://github.com/matehat/cqerl.git", tag: "v0.8.0"},
+      {:exrm, git: "https://github.com/bitwalker/exrm.git", tag: "0.19.2"},
+      {:exsync, "~> 0.1.0", only: :dev},
+      {:espec, "~> 0.6.4", only: :test},
     ]
   end
 end

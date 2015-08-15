@@ -23,6 +23,4 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
-# Maru
-config :maru, ZServer.API,
-  http: [port: 8080]
+import_config "#{Mix.env}.exs"

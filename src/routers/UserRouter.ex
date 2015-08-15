@@ -1,4 +1,4 @@
-defmodule UserRouter do
+defmodule ZServer.Routers.UserRouter do
   use Maru.Router
 
   namespace :user do
