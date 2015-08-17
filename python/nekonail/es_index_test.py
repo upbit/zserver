@@ -13,20 +13,21 @@ import requests
 sys.path.insert(0, 'pixivpy3.zip')
 from pixivpy3 import *
 
-def add_user_illust(illust):
-  query = json.dumps(illust)
-  return requests.post("http://localhost:9200/users/illust", data=query).text
-
-def index_author_illusts(api, author_id, pages=[1]):
-  for page in pages:
-    for illust in api.users_works(author_id, page=page).response:
-      print add_user_illust(illust)
-    time.sleep(0.5)
+def add_illusts(illusts):
+  query = ""
+  for illust in illusts:
+    query += json.dumps({"index": {"_id": illust.id}}) + "\n"
+    query += json.dumps(illust) + "\n"
+  return requests.post("http://localhost:9200/users/illust/_bulk", data=query).text
 
 def index():
   api = PixivAPI()
   api.login("username", "password")
-  index_author_illusts(api, 1184799, range(1,3))
+
+  for page in [1,2,3]:
+    illusts = api.users_works(1184799, page=page).response
+    print add_illusts(illusts)
+    time.sleep(0.5)
 
 def query_tags(tag_text, _from=0, size=30):
   query = json.dumps({
